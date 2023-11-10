@@ -29,10 +29,11 @@ public class RestRunner implements ApplicationRunner {
         // 시간 측정
         stopWatch.start();
 
-        // Non-Blocking I/O 기반 비동기식 API
+        // Non-Blocking I/O 기반 비동기식 API. 이대로는 동작하지 않는다.
         Mono<String> helloMono = client.get().uri("http://localhost:8080/hello")
                 .retrieve().bodyToMono(String.class);
 
+        // 이를 streaming API 라고 하며, 반드시 이하처럼 subscribe 를 이용하여 동작시켜야 한다.
         helloMono.subscribe(s -> { System.out.println(s);
 
             if (stopWatch.isRunning()) {
