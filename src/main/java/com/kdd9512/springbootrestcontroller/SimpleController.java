@@ -14,7 +14,7 @@ public class SimpleController {
 
     @GetMapping("/world")
     public String world() throws InterruptedException{
-        Thread.sleep(3000l);  // 5 second
+        Thread.sleep(3000l);  // 3 second
         return "world";
     }
 

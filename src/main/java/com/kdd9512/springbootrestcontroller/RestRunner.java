@@ -16,12 +16,13 @@ public class RestRunner implements ApplicationRunner {
     @Autowired
     WebClient.Builder builder;
 
-//    @Autowired
-//    RestTemplateBuilder builder;
+    @Autowired
+    RestTemplateBuilder restBuilder;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // RestTemplate restTemplate = builder.build();
+        // RestTemplate restTemplate = restBuilder.build();
+
 
         WebClient client = builder.build();
         StopWatch stopWatch = new StopWatch();
@@ -30,7 +31,7 @@ public class RestRunner implements ApplicationRunner {
         stopWatch.start();
 
         // Non-Blocking I/O 기반 비동기식 API. 이대로는 동작하지 않는다.
-        Mono<String> helloMono = client.get().uri("http://localhost:8080/hello")
+        Mono<String> helloMono = client.get().uri("/hello")
                 .retrieve().bodyToMono(String.class);
 
         // 이를 streaming API 라고 하며, 반드시 이하처럼 subscribe 를 이용하여 동작시켜야 한다.
@@ -45,7 +46,9 @@ public class RestRunner implements ApplicationRunner {
 
         });
 
-        Mono<String> worldMono = client.get().uri("http://localhost:8080/world")
+        // controller 단에서 해당 페이지 호출을 지연하도록 하는 코드를 넣었기 때문에
+        // app 구동 시, 지연시간이 짧은 world 부터 먼저 출력된다.
+        Mono<String> worldMono = client.get().uri("/world")
                 .retrieve().bodyToMono(String.class);
 
         worldMono.subscribe(s -> { System.out.println(s);
